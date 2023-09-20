@@ -1,0 +1,72 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f2f2f2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    color: #555;
+}
+
+p {
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+form {
+    background: #fff;
+    padding: 20px 40px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 20px 0;
+    width: 300px;
+}
+
+input[type="text"] {
+    background: #f9f9f9;
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    color: #333;
+    font-size: 16px;
+    outline: none;
+}
+
+input[type="submit"] {
+    padding: 12px;
+    width: 100%;
+    border: none;
+    background-color: #007ACC;
+    color: white;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 16px;
+    transition: background 0.3s;
+}
+
+input[type="submit"]:hover {
+    background-color: #005AA5;
+}
+
+#regForm {
+    background: transparent;
+    padding: 0;
+    margin-top: 0;
+}
+
+#regForm input[type="submit"] {
+    padding: 10px 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #e0e0e0;
+    color: #555;
+}
+
+#regForm input[type="submit"]:hover {
+    background-color: #e6e6e6;
+}
