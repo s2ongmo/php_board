@@ -26,7 +26,7 @@ form {
     width: 300px;
 }
 
-input[type="text"] {
+input[type="text"], input[type="password"] {
     background: #f9f9f9;
     width: 100%;
     padding: 10px;
