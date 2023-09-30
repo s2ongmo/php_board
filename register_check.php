@@ -1,83 +1,65 @@
 <?php
-    session_start();
 
     if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] == true){
         header("Location: index.php");
         exit();
     }
     
-    $host = "localhost";
-    $user = "root";
-    $pw = "root";
-    $dbName = "board";
-
-    // 데이터베이스 연결
-    $conn = mysqli_connect($host, $user, $pw, $dbName);
-    
-    // 연결 실패 시 메시지 출력
-    if (!$conn) {
-        die("Connection failed: " . mysqli_connect_error());
+    if($_SERVER["REQUEST_METHOD"] !== "POST"){
+        header("Location: register.php");
     }
 
+    include "db_config.php";
+
     // POST로 받은 데이터 가져오기
-    $id = mysqli_real_escape_string($conn, $_POST['id']);
-    $pw = mysqli_real_escape_string($conn, $_POST['pw']);
-    $email = mysqli_real_escape_string($conn, $_POST['email']);
+    $id = $_POST["id"];
+    $userPw = $_POST["pw"];
+    $email = $_POST["email"];
+    $nickname = $_POST["nickname"];
 
     // 이메일 양식 체크
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         echo "<script>alert('Invalid email address.');location='/register.php';</script>";
-        $conn->close();
         exit();
     }
 
     // 패스워드는 해싱해서 저장하는 것이 좋습니다.
-    $hashed_pw = password_hash($pw, PASSWORD_DEFAULT);
-
-    // 아이디, 이메일 중복 체크
-    $stmt = $conn->prepare("SELECT user_id, email FROM users WHERE user_id = ? OR email = ?");
-    $stmt->bind_param("ss", $id, $email);
-    
-    $stmt->execute();
-    $result = $stmt->get_result();
-    
-    while($row = $result->fetch_assoc()) {
-        if($row['user_id'] == $id) {
-            echo "<script>
-                alert('ID already in use.');
-                location='/register.php';
-                </script>";
-            $stmt->close();
-            exit();
-        } elseif($row['email'] == $email) {
-            echo "<script>
-                alert('Email address already in use.');
-                location='/register.php';
-                </script>";
-            $stmt->close();
-            exit();
+    $hashed_pw = password_hash($userPw, PASSWORD_DEFAULT);
+    $stmt = $pdo->prepare("SELECT user_id, email, nickname FROM users WHERE user_id = :id OR email = :email OR nickname = :nickname");
+    $stmt->execute(array(
+        ':id' => $id,
+        ':email' => $email,
+        ':nickname' => $nickname
+    ));
+    //  id, email duplicate check
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    foreach ($result as $row){
+        if ($row['user_id'] == $id){
+            echo "<script>alert('The ID is duplicated.');</script>";
+        }else if ($row['email'] == $email){
+            echo "<script>alert('The Email is duplicated.');</script>";
         }
+        else if ($row['nickname'] == $nickname){
+            echo "<script>alert('The Nickname is duplicated.');</script>";
+        }
+        echo "<script>location='/register.php';</script>";
+        exit();
     }
-    $stmt->close();
     
-    // 쿼리 준비 (플레이스홀더 사용)
-    $stmt = $conn->prepare("INSERT INTO users (user_id, password, email) VALUES (?, ?, ?)");
-
-    // 플레이스홀더에 변수 바인드
-    $stmt->bind_param("sss", $id, $hashed_pw, $email); // sss는 각 변수의 데이터 타입을 나타냅니다. 여기서는 모두 문자열이므로 's'를 사용했습니다.
-
-    // 쿼리 실행
-    $stmt->execute();
+    // register query
+    $stmt = $pdo->prepare("INSERT INTO users (user_id, password, email, nickname) VALUES (:id, :password, :email, :nickname)");
+    $stmt->execute(array(
+        ':id' => $id,
+        ':password' => $hashed_pw,
+        ':email' => $email,
+        ':nickname' => $nickname
+    ));
 
     // 결과 확인 및 종료
-    if ($stmt->affected_rows > 0) {
-        echo "<script>alert('New record created successfully!');location='/login.php'</script>";
+    if ($stmt->rowCount() > 0) {
+        echo "<script>alert('New record created successfully!');location='/login.php';</script>";
     } else {
         echo "<script>alert('Error!');location='/register.php';</script>";
     }
-
-    $stmt->close();
-    // 데이터베이스 연결 종료
-    $conn->close();
-    
+    exit();
 ?>

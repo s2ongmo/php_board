@@ -1,12 +1,11 @@
 <?php
-    session_start();
     
     if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] == true){
-        echo "<script>alert('you're logged in');</script>";
         header("Location: index.php");
         exit();
     }
     
+    echo "<link rel='stylesheet' href='login_form.css'>"
 ?>
 
 <!DOCTYPE html>
@@ -14,7 +13,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="login.css">
     <title>Login</title>
 </head>
 <body>
